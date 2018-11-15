@@ -224,12 +224,12 @@ dataset_val.load_shapes(50, config.IMAGE_SHAPE[0], config.IMAGE_SHAPE[1])
 dataset_val.prepare()
 
 
-# Load and display random samples
+# Load and save random samples
 image_ids = np.random.choice(dataset_train.image_ids, 4)
 for image_id in image_ids:
     image = dataset_train.load_image(image_id)
     mask, class_ids = dataset_train.load_mask(image_id)
-    visualize.display_top_masks(
+    visualize.save_top_masks(
         image, mask, class_ids, dataset_train.class_names)
 
 
@@ -311,14 +311,14 @@ log("gt_class_id", gt_class_id)
 log("gt_bbox", gt_bbox)
 log("gt_mask", gt_mask)
 
-visualize.display_instances(original_image, gt_bbox, gt_mask, gt_class_id,
-                            dataset_train.class_names, figsize=(8, 8))
+visualize.save_instances(original_image, gt_bbox, gt_mask, gt_class_id,
+                         dataset_train.class_names, figsize=(8, 8))
 
 results = model.detect([original_image], verbose=1)
 
 r = results[0]
-visualize.display_instances(original_image, r['rois'], r['masks'], r['class_ids'],
-                            dataset_val.class_names, r['scores'], ax=get_ax())
+visualize.save_instances(original_image, r['rois'], r['masks'], r['class_ids'],
+                         dataset_val.class_names, r['scores'], ax=get_ax())
 
 # Compute VOC-Style mAP @ IoU=0.5
 # Running on 10 images. Increase for better accuracy.
