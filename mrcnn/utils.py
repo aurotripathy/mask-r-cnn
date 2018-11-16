@@ -27,6 +27,24 @@ COCO_MODEL_URL = "https://github.com/matterport/Mask_RCNN/releases/download/v2.0
 
 
 ############################################################
+#  Utility Functions
+############################################################
+def log(text, array=None):
+    """Prints a text message. And, optionally, if a Numpy array is provided it
+    prints it's shape, min, and max values.
+    """
+    if array is not None:
+        text = text.ljust(25)
+        text += ("shape: {:20}  ".format(str(array.shape)))
+        if array.size:
+            text += ("min: {:10.5f}  max: {:10.5f}".format(array.min(), array.max()))
+        else:
+            text += ("min: {:10}  max: {:10}".format("", ""))
+        text += "  {}".format(array.dtype)
+    print(text)
+
+
+############################################################
 #  Bounding Boxes
 ############################################################
 
@@ -100,7 +118,7 @@ def compute_overlaps_masks(masks1, masks2):
     """Computes IoU overlaps between two sets of masks.
     masks1, masks2: [Height, Width, instances]
     """
-    
+
     # If either set of masks is empty return empty result
     if masks1.shape[-1] == 0 or masks2.shape[-1] == 0:
         return np.zeros((masks1.shape[-1], masks2.shape[-1]))
@@ -755,14 +773,14 @@ def compute_ap_range(gt_box, gt_class_id, gt_mask,
     """Compute AP over a range or IoU thresholds. Default range is 0.5-0.95."""
     # Default is 0.5 to 0.95 with increments of 0.05
     iou_thresholds = iou_thresholds or np.arange(0.5, 1.0, 0.05)
-    
+
     # Compute AP over range of IoU thresholds
     AP = []
     for iou_threshold in iou_thresholds:
         ap, precisions, recalls, overlaps =\
             compute_ap(gt_box, gt_class_id, gt_mask,
-                        pred_box, pred_class_id, pred_score, pred_mask,
-                        iou_threshold=iou_threshold)
+                       pred_box, pred_class_id, pred_score, pred_mask,
+                       iou_threshold=iou_threshold)
         if verbose:
             print("AP @{:.2f}:\t {:.3f}".format(iou_threshold, ap))
         AP.append(ap)
