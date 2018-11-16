@@ -592,6 +592,19 @@ def unmold_mask(mask, bbox, image_shape):
     return full_mask
 
 
+def mold_image(images, config):
+    """Expects an RGB image (or array of images) and subtracts
+    the mean pixel and converts it to float. Expects image
+    colors in RGB order.
+    """
+    return images.astype(np.float32) - config.MEAN_PIXEL
+
+
+def unmold_image(normalized_images, config):
+    """Takes a image normalized with mold() and returns the original."""
+    return (normalized_images + config.MEAN_PIXEL).astype(np.uint8)
+
+
 ############################################################
 #  Anchors
 ############################################################
