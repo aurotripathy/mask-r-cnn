@@ -2,11 +2,8 @@ import os
 import sys
 import random
 import math
-import re
-import time
 import numpy as np
 import cv2
-import matplotlib
 import matplotlib.pyplot as plt
 
 # Root directory of the project
@@ -19,8 +16,7 @@ from mrcnn import utils
 import mrcnn.model as modellib
 from mrcnn import visualize
 from mrcnn.utils import log
-
-# %matplotlib inline
+from mrcnn.data_generator import load_image_gt
 
 # Directory to save logs and trained model
 MODEL_DIR = os.path.join(ROOT_DIR, "logs")
@@ -302,8 +298,8 @@ model.load_weights(model_path, by_name=True)
 # Test on a random image
 image_id = random.choice(dataset_val.image_ids)
 original_image, image_meta, gt_class_id, gt_bbox, gt_mask =\
-    modellib.load_image_gt(dataset_val, inference_config,
-                           image_id, use_mini_mask=False)
+    load_image_gt(dataset_val, inference_config,
+                  image_id, use_mini_mask=False)
 
 log("original_image", original_image)
 log("image_meta", image_meta)
@@ -327,8 +323,8 @@ APs = []
 for image_id in image_ids:
     # Load image and ground truth data
     image, image_meta, gt_class_id, gt_bbox, gt_mask =\
-        modellib.load_image_gt(dataset_val, inference_config,
-                               image_id, use_mini_mask=False)
+        load_image_gt(dataset_val, inference_config,
+                      image_id, use_mini_mask=False)
     molded_images = np.expand_dims(
         modellib.mold_image(image, inference_config), 0)
     # Run object detection
