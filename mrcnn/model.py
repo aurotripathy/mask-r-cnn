@@ -30,8 +30,7 @@ from mrcnn.loss_functions import mrcnn_class_loss_graph, mrcnn_bbox_loss_graph
 from mrcnn.loss_functions import mrcnn_mask_loss_graph
 from mrcnn.data_generator import data_generator
 from mrcnn.data_formatting import compose_image_meta, parse_image_meta_graph
-from mrcnn.graph_utils import trim_zeros_graph, norm_boxes_graph, \
-    denorm_boxes_graph
+from mrcnn.graph_utils import trim_zeros_graph, norm_boxes_graph
 
 # Requires TensorFlow 1.3+ and Keras 2.0.8+.
 from distutils.version import LooseVersion
@@ -813,7 +812,8 @@ def build_fpn_mask_graph(rois, feature_maps, image_meta,
     # ROI Pooling
     # Shape: [batch, num_rois, MASK_POOL_SIZE, MASK_POOL_SIZE, channels]
     x = PyramidROIAlign([pool_size, pool_size],
-                        name="roi_align_mask")([rois, image_meta] + feature_maps)
+                        name="roi_align_mask")([rois, image_meta] +
+                                               feature_maps)
 
     # Conv layers
     x = KL.TimeDistributed(KL.Conv2D(256, (3, 3), padding="same"),
@@ -932,7 +932,8 @@ class MaskRCNN():
                                                 train_bn=config.TRAIN_BN)
         else:
             _, C2, C3, C4, C5 = resnet_graph(input_image, config.BACKBONE,
-                                             stage5=True, train_bn=config.TRAIN_BN)
+                                             stage5=True,
+                                             train_bn=config.TRAIN_BN)
         # Top-down Layers
         # TODO: add assert to varify feature map sizes match what's in config
         P5 = KL.Conv2D(config.TOP_DOWN_PYRAMID_SIZE,
