@@ -248,7 +248,7 @@ elif init_with == "coco":
                                 "mrcnn_bbox", "mrcnn_mask"])
 elif init_with == "last":
     # Load the last model you trained and continue training
-    model.load_weights(model.find_last(), by_name=True)
+    model.load_weights(model.find_most_recent_checkpoint(), by_name=True)
 
 # Train the head branches
 # Passing layers="heads" freezes all layers except the head
@@ -290,7 +290,7 @@ model = modellib.MaskRCNN(mode="inference",
 # Get path to saved weights
 # Either set a specific path or find last trained weights
 # model_path = os.path.join(ROOT_DIR, ".h5 file name here")
-model_path = model.find_last()
+model_path = model.find_most_recent_checkpoint()
 
 # Load trained weights
 print("Loading weights from ", model_path)
