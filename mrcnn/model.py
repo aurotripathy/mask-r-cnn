@@ -423,7 +423,7 @@ class MaskRCNN():
 
         return model
 
-    def find_last(self):
+    def find_most_recent_checkpoint(self):
         """Finds the last checkpoint file of the last trained model in the
         model directory.
         Returns:
