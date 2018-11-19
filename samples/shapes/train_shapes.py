@@ -10,13 +10,15 @@ import matplotlib.pyplot as plt
 ROOT_DIR = os.path.abspath("../../")
 
 # Import Mask RCNN
-sys.path.append(ROOT_DIR)  # To find local version of the library
+sys.path.insert(0, ROOT_DIR)  # To find local version of the library
+print('sys path', sys.path)
 from mrcnn.config import Config
 from mrcnn import utils
 import mrcnn.model as modellib
 from mrcnn import visualize
 from mrcnn.utils import log
 from mrcnn.data_generator import load_image_gt
+
 
 # Directory to save logs and trained model
 MODEL_DIR = os.path.join(ROOT_DIR, "logs")
@@ -227,7 +229,6 @@ for image_id in image_ids:
     mask, class_ids = dataset_train.load_mask(image_id)
     visualize.save_top_masks(
         image, mask, class_ids, dataset_train.class_names)
-
 
 # Create model in training mode
 model = modellib.MaskRCNN(mode="training", config=config,
