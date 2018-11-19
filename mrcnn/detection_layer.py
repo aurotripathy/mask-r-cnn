@@ -1,8 +1,8 @@
-import tendorflow as tf
+import tensorflow as tf
 import keras.engine as KE
 from mrcnn.data_formatting import parse_image_meta_graph
 from mrcnn.graph_utils import norm_boxes_graph
-from proposal_layer import apply_box_deltas_graph, clip_boxes_graph
+from mrcnn.proposal_layer import apply_box_deltas_graph, clip_boxes_graph
 from mrcnn import utils
 
 ############################################################
