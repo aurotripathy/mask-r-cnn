@@ -5,6 +5,7 @@ import math
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
+from pudb import set_trace
 
 # Root directory of the project
 ROOT_DIR = os.path.abspath("../../")
@@ -19,6 +20,7 @@ from mrcnn import visualize
 from mrcnn.utils import log
 from mrcnn.data_generator import load_image_gt
 
+set_trace()
 
 # Directory to save logs and trained model
 MODEL_DIR = os.path.join(ROOT_DIR, "logs")
