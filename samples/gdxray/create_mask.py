@@ -6,6 +6,7 @@ import numpy as np
 import cv2
 
 ROOT_DIR = '/home/auro/via/nirmalyalabs-work/'
+OUT_DIR = ROOT_DIR + 'out/'
 
 
 def embed_text(img, text):
@@ -95,4 +96,12 @@ for json_name in glob.glob(ROOT_DIR + '/*/*/*.json'):
     opacity = 0.4
     # set_trace()
     cv2.addWeighted(image_overlay, opacity, image, 1 - opacity, 0, image)
+
+    out_file = OUT_DIR + image_name.split(ROOT_DIR)[1]
+    out_dir = os.path.dirname(out_file)
+    print("Out file", out_file)
+    print("Out Dir", out_dir)
+    os.makedirs(out_dir, exist_ok=True)
+
+    cv2.imwrite(out_file, image)
     cv2.imwrite(image_name.split('/')[-1], image)
