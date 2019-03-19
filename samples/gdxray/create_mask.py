@@ -1,12 +1,10 @@
 import json
 import glob
 import os
-from pudb import set_trace
+# from pudb import set_trace
 import numpy as np
 import cv2
-
-ROOT_DIR = '/home/auro/via/nirmalyalabs-work/'
-OUT_DIR = ROOT_DIR + 'out/'
+import argparse
 
 
 def embed_text(img, text):
@@ -56,7 +54,15 @@ def gen_dict_extract(key, var):
                         yield result
 
 
-for json_name in glob.glob(ROOT_DIR + '/*/*/*.json'):
+parser = argparse.ArgumentParser(
+    description='Generate the masks and overlay on the images')
+parser.add_argument("--root_dir",
+                    help="Location of root dir for the json files", required=True)
+args = parser.parse_args()
+print("Root dir:", args.root_dir)
+out_root_dir = args.root_dir + 'out/'
+
+for json_name in glob.glob(args.root_dir + '/*/*/*.json'):
     print('\nJSON File name:', json_name)
     image_name_list = glob.glob(os.path.dirname(json_name) + '/*.png')
     if len(image_name_list) != 1 and not os.path.isfile(image_name_list[0]):
@@ -72,7 +78,6 @@ for json_name in glob.glob(ROOT_DIR + '/*/*/*.json'):
     with open(json_name, "r") as read_file:
         regions = json.load(read_file)
 
-    set_trace()
     file_list = list(gen_dict_extract('filename', regions))
     print('File Names in JSON file', file_list,
           '****' if len(file_list) > 1 else "")
@@ -97,11 +102,11 @@ for json_name in glob.glob(ROOT_DIR + '/*/*/*.json'):
     # set_trace()
     cv2.addWeighted(image_overlay, opacity, image, 1 - opacity, 0, image)
 
-    out_file = OUT_DIR + image_name.split(ROOT_DIR)[1]
+    out_file = out_root_dir + image_name.split(args.root_dir)[1]
     out_dir = os.path.dirname(out_file)
     print("Out file", out_file)
     print("Out Dir", out_dir)
     os.makedirs(out_dir, exist_ok=True)
 
     cv2.imwrite(out_file, image)
-    cv2.imwrite(image_name.split('/')[-1], image)
+    # cv2.imwrite(image_name.split('/')[-1], image)
