@@ -86,6 +86,8 @@ for json_name in glob.glob(args.root_dir + '/*/*/*.json'):
     logging.info('File Names in JSON file:{}'.format(file_list))
     if len(file_list) > 1:
         logging.error('File list greater that one')
+        print("JSON file name: {}".format(json_name))
+        print("File list greater that one: {}".format(file_list))
 
     region_list = list(gen_dict_extract('regions', regions))
     logging.info('How many regions:{}'.format(len(region_list)))
