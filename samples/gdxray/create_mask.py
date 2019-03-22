@@ -65,6 +65,7 @@ logging.info('Root dir:{}'.format(args.root_dir))
 out_root_dir = args.root_dir + 'out/'
 logging.info('Output Root dir:{}'.format(out_root_dir))
 
+count = 0
 for json_name in glob.glob(args.root_dir + '/*/*/*.json'):
     logging.info('\nJSON File name:{}'.format(json_name))
     image_name_list = glob.glob(os.path.dirname(json_name) + '/*.png')
@@ -117,3 +118,5 @@ for json_name in glob.glob(args.root_dir + '/*/*/*.json'):
     cv2.imwrite(out_file, image)
     # cv2.imwrite(image_name.split('/')[-1], image)
     print('.', end='')  # time marker
+    count += 1
+print("Total processed {}".format(count))
