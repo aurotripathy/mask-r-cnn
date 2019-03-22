@@ -116,3 +116,4 @@ for json_name in glob.glob(args.root_dir + '/*/*/*.json'):
 
     cv2.imwrite(out_file, image)
     # cv2.imwrite(image_name.split('/')[-1], image)
+    print('.', end='')  # time marker
