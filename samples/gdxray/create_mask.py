@@ -23,20 +23,6 @@ def embed_text(img, text):
                 lineType)
 
 
-# https://gist.github.com/douglasmiranda/5127251
-# def find(key, dictionary):
-#     for k, v in dictionary.items():
-#         if k == key:
-#             yield v
-#         elif isinstance(v, dict):
-#             for result in find(key, v):
-#                 yield result
-#         elif isinstance(v, list):
-#             for d in v:
-#                 for result in find(key, d):
-#                     yield result
-
-
 def gen_dict_extract(key, var):
     """
     https://stackoverflow.com/questions/ \
@@ -59,10 +45,14 @@ logging.basicConfig(filename='mask_creation.log', level=logging.INFO)
 parser = argparse.ArgumentParser(
     description='Generate the masks and overlay on the images')
 parser.add_argument("--root_dir",
-                    help="Location of root dir for the json files", required=True)
+                    help="Location of root dir for the json files",
+                    required=True)
+parser.add_argument("--out_dir",
+                    help="Location of output dir for the masked files",
+                    required=True)
 args = parser.parse_args()
 logging.info('Root dir:{}'.format(args.root_dir))
-out_root_dir = args.root_dir + 'out/'
+out_root_dir = os.path.join(args.out_dir, 'out')
 logging.info('Output Root dir:{}'.format(out_root_dir))
 
 count = 0
@@ -108,10 +98,9 @@ for json_name in glob.glob(args.root_dir + '/*/*/*.json'):
         pts = pts.reshape((-1, 1, 2))
         cv2.fillPoly(image_overlay, [pts], (128, 128, 0))
     opacity = 0.4
-    # set_trace()
     cv2.addWeighted(image_overlay, opacity, image, 1 - opacity, 0, image)
 
-    out_file = out_root_dir + image_name.split(args.root_dir)[1]
+    out_file = os.path.join(out_root_dir, image_name.split(args.root_dir)[1])
     out_dir = os.path.dirname(out_file)
     logging.info("Out file: {}".format(out_file))
     logging.info("Out Dir: {}".format(out_dir))
@@ -121,4 +110,4 @@ for json_name in glob.glob(args.root_dir + '/*/*/*.json'):
     # cv2.imwrite(image_name.split('/')[-1], image)
     print('.', end='')  # time marker
     count += 1
-print("Total processed {}".format(count))
+print("Total JSON-files processed: {}".format(count))
