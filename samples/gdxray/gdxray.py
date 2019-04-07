@@ -5,26 +5,21 @@ Train on the toy Balloon dataset and implement color splash effect.
 Copyright (c) 2018 Matterport, Inc.
 Licensed under the MIT License (see LICENSE for details)
 Written by Waleed Abdulla
-
+Refactored and adapted to another dataset by Auro Tripathy
 ------------------------------------------------------------
 
 Usage: import the module (see Jupyter notebooks for examples), or run from
        the command line as such:
 
     # Train a new model starting from pre-trained COCO weights
-    python3 balloon.py train --dataset=/path/to/balloon/dataset --weights=coco
+    python3 gdxray.py train --dataset=/path/to/balloon/dataset --weights=coco
 
     # Resume training a model that you had trained earlier
-    python3 balloon.py train --dataset=/path/to/balloon/dataset --weights=last
+    python3 gdxray.py train --dataset=/path/to/balloon/dataset --weights=last
 
     # Train a new model starting from ImageNet weights
-    python3 balloon.py train --dataset=/path/to/balloon/dataset --weights=imagenet
+    python3 gdxray.py train --dataset=/path/to/balloon/dataset --weights=imagenet
 
-    # Apply color splash to an image
-    python3 balloon.py splash --weights=/path/to/weights/file.h5 --image=<URL or path to file>
-
-    # Apply color splash to video using the last weights you trained
-    python3 balloon.py splash --weights=last --video=<URL or path to file>
 """
 
 import os
@@ -54,19 +49,19 @@ DEFAULT_LOGS_DIR = os.path.join(ROOT_DIR, "logs")
 ############################################################
 
 
-class BalloonConfig(Config):
-    """Configuration for training on the toy  dataset.
+class GdxrayConfig(Config):
+    """Configuration for training on the gdxray  dataset.
     Derives from the base Config class and overrides some values.
     """
     # Give the configuration a recognizable name
-    NAME = "balloon"
+    NAME = "gdxray"
 
     # We use a GPU with 12GB memory, which can fit two images.
     # Adjust down if you use a smaller GPU.
     IMAGES_PER_GPU = 2
 
     # Number of classes (including background)
-    NUM_CLASSES = 1 + 1  # Background + balloon
+    NUM_CLASSES = 1 + 1  # Background + defect
 
     # Number of training steps per epoch
     STEPS_PER_EPOCH = 100
@@ -79,9 +74,9 @@ class BalloonConfig(Config):
 #  Dataset
 ############################################################
 
-class BalloonDataset(utils.Dataset):
+class GdxrayDataset(utils.Dataset):
 
-    def load_balloon(self, dataset_dir, subset):
+    def load_gdxray(self, dataset_dir, subset):
         """Load a subset of the Balloon dataset.
         dataset_dir: Root directory of the dataset.
         subset: Subset to load: train or val
@@ -109,7 +104,8 @@ class BalloonDataset(utils.Dataset):
         # }
         # We mostly care about the x and y coordinates of each region
         # Note: In VIA 2.0, regions was changed from a dict to a list.
-        annotations = json.load(open(os.path.join(dataset_dir, "via_region_data.json")))
+        annotations = json.load(
+            open(os.path.join(dataset_dir, "via_region_data.json")))
         annotations = list(annotations.values())  # don't need the dict keys
 
         # The VIA tool saves images in the JSON even if they don't have any
@@ -123,9 +119,10 @@ class BalloonDataset(utils.Dataset):
             # shape_attributes (see json format above)
             # The if condition is needed to support VIA versions 1.x and 2.x.
             if type(a['regions']) is dict:
-                polygons = [r['shape_attributes'] for r in a['regions'].values()]
+                polygons = [r['shape_attributes']
+                            for r in a['regions'].values()]
             else:
-                polygons = [r['shape_attributes'] for r in a['regions']] 
+                polygons = [r['shape_attributes'] for r in a['regions']]
 
             # load_mask() needs the image size to convert polygons to masks.
             # Unfortunately, VIA doesn't include it in JSON, so we must read
@@ -233,7 +230,8 @@ def detect_and_color_splash(model, image_path=None, video_path=None):
         # Color splash
         splash = color_splash(image, r['masks'])
         # Save output
-        file_name = "splash_{:%Y%m%dT%H%M%S}.png".format(datetime.datetime.now())
+        file_name = "splash_{:%Y%m%dT%H%M%S}.png".format(
+            datetime.datetime.now())
         skimage.io.imsave(file_name, splash)
     elif video_path:
         import cv2
@@ -244,7 +242,8 @@ def detect_and_color_splash(model, image_path=None, video_path=None):
         fps = vcapture.get(cv2.CAP_PROP_FPS)
 
         # Define codec and create video writer
-        file_name = "splash_{:%Y%m%dT%H%M%S}.avi".format(datetime.datetime.now())
+        file_name = "splash_{:%Y%m%dT%H%M%S}.avi".format(
+            datetime.datetime.now())
         vwriter = cv2.VideoWriter(file_name,
                                   cv2.VideoWriter_fourcc(*'MJPG'),
                                   fps, (width, height))
@@ -307,7 +306,7 @@ if __name__ == '__main__':
         assert args.dataset, "Argument --dataset is required for training"
     elif args.command == "splash":
         assert args.image or args.video,\
-               "Provide --image or --video to apply color splash"
+            "Provide --image or --video to apply color splash"
 
     print("Weights: ", args.weights)
     print("Dataset: ", args.dataset)
