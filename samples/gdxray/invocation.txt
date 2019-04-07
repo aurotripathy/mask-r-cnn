@@ -1,0 +1,2 @@
+python create_mask.py --root_dir /home/auro/via/nirmalyalabstest-test-work/ --out_dir /home/auro/nlabs
+# python create_mask.py --root_dir /home/auro/via/Nirmalya/consolidated/ --out_dir /home/auro/nlab-consolidated
