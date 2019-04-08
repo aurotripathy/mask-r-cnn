@@ -1,6 +1,6 @@
 """
 Mask R-CNN
-Train on the toy Balloon dataset and implement color splash effect.
+Train on the GdXray dataset and implement color splash effect.
 
 Copyright (c) 2018 Matterport, Inc.
 Licensed under the MIT License (see LICENSE for details)
@@ -18,8 +18,8 @@ Usage: import the module (see Jupyter notebooks for examples), or run from
     python3 gdxray.py train --dataset=/path/to/balloon/dataset --weights=last
 
     # Train a new model starting from ImageNet weights
-    python3 gdxray.py train --dataset=/path/to/balloon/dataset --weights=imagenet
-
+    python3 gdxray.py train --dataset=/path/to/balloon/dataset \
+       --weights=imagenet
 """
 
 import os
@@ -28,6 +28,9 @@ import json
 import datetime
 import numpy as np
 import skimage.draw
+import glob
+import logging
+from pudb import set_trace
 
 # Root directory of the project
 ROOT_DIR = os.path.abspath("../../")
@@ -53,6 +56,8 @@ class GdxrayConfig(Config):
     """Configuration for training on the gdxray  dataset.
     Derives from the base Config class and overrides some values.
     """
+    GPU_COUNT = 1  # TODO fix this
+
     # Give the configuration a recognizable name
     NAME = "gdxray"
 
@@ -70,73 +75,94 @@ class GdxrayConfig(Config):
     DETECTION_MIN_CONFIDENCE = 0.9
 
 
+def gen_dict_extract(key, var):
+    """
+    https://stackoverflow.com/questions/ \
+    9807634/find-all-occurrences-of-a-key-in-nested-python-dictionaries-and-lists
+    """
+    if hasattr(var, 'items'):
+        for k, v in var.items():
+            if k == key:
+                yield v
+            if isinstance(v, dict):
+                for result in gen_dict_extract(key, v):
+                    yield result
+            elif isinstance(v, list):
+                for d in v:
+                    for result in gen_dict_extract(key, d):
+                        yield result
+
 ############################################################
 #  Dataset
 ############################################################
 
+
 class GdxrayDataset(utils.Dataset):
 
     def load_gdxray(self, dataset_dir, subset):
-        """Load a subset of the Balloon dataset.
+        """Load a subset of the gdxray dataset.
         dataset_dir: Root directory of the dataset.
         subset: Subset to load: train or val
         """
         # Add classes. We have only one class to add.
-        self.add_class("balloon", 1, "balloon")
+        self.add_class("gdxary", 1, "gdxray")
 
         # Train or validation dataset?
         assert subset in ["train", "val"]
         dataset_dir = os.path.join(dataset_dir, subset)
 
-        # Load annotations
-        # VGG Image Annotator (up to version 1.6) saves each image in the form:
-        # { 'filename': '28503151_5b5b7ec140_b.jpg',
-        #   'regions': {
-        #       '0': {
-        #           'region_attributes': {},
-        #           'shape_attributes': {
-        #               'all_points_x': [...],
-        #               'all_points_y': [...],
-        #               'name': 'polygon'}},
-        #       ... more regions ...
-        #   },
-        #   'size': 100202
-        # }
-        # We mostly care about the x and y coordinates of each region
-        # Note: In VIA 2.0, regions was changed from a dict to a list.
-        annotations = json.load(
-            open(os.path.join(dataset_dir, "via_region_data.json")))
-        annotations = list(annotations.values())  # don't need the dict keys
-
-        # The VIA tool saves images in the JSON even if they don't have any
-        # annotations. Skip unannotated images.
-        annotations = [a for a in annotations if a['regions']]
-
-        # Add images
-        for a in annotations:
-            # Get the x, y coordinaets of points of the polygons that make up
-            # the outline of each object instance. These are stores in the
-            # shape_attributes (see json format above)
-            # The if condition is needed to support VIA versions 1.x and 2.x.
-            if type(a['regions']) is dict:
-                polygons = [r['shape_attributes']
-                            for r in a['regions'].values()]
+        set_trace()
+        count = 0
+        for json_name in glob.glob(args.dataset + '/*/*/*.json'):
+            logging.info('\nJSON File name:{}'.format(json_name))
+            image_name_list = glob.glob(os.path.dirname(json_name) + '/*.png')
+            if len(image_name_list) != 1 and not os.path.isfile(image_name_list[0]):
+                logging.info('File {}, does not exist'.format(image_name_list))
             else:
-                polygons = [r['shape_attributes'] for r in a['regions']]
+                image_name = image_name_list[0]
+            logging.info('\nImage file name:{}'.format(image_name))
+
+            with open(json_name, "r") as read_file:
+                regions = json.load(read_file)
+
+            file_list = list(gen_dict_extract('filename', regions))
+            logging.info('File Names in JSON file:{}'.format(file_list))
+            if len(file_list) > 1:
+                logging.error('File list greater that one')
+                print("JSON file name: {}".format(json_name))
+                print("File list greater that one: {}".format(file_list))
+                continue
+            image_path = image_name_list[0]
+
+            region_list = list(gen_dict_extract('regions', regions))
+            logging.info('How many regions:{}'.format(len(region_list)))
+            logging.info('\nRegion list')
+            logging.info(region_list)
+
+            logging.info('\nEnumerate shapes')
+            for shape_attrib in region_list[0]:
+                logging.info('all_points_x {}'.format(
+                    shape_attrib['shape_attributes']['all_points_x']))
+                logging.info('all_points_y {}'.format(
+                    shape_attrib['shape_attributes']['all_points_y']))
+                polys = [[x, y] for x, y in
+                         zip(shape_attrib['shape_attributes']['all_points_x'],
+                             shape_attrib['shape_attributes']['all_points_y'])]
+                polys = np.array(polys[0:-1])  # IS THIS NEEDED??
 
             # load_mask() needs the image size to convert polygons to masks.
             # Unfortunately, VIA doesn't include it in JSON, so we must read
             # the image. This is only managable since the dataset is tiny.
-            image_path = os.path.join(dataset_dir, a['filename'])
             image = skimage.io.imread(image_path)
             height, width = image.shape[:2]
 
             self.add_image(
-                "balloon",
-                image_id=a['filename'],  # use file name as a unique image id
+                "gdxray",
+                image_id=image_path,  # ??use file name as a unique image id
                 path=image_path,
                 width=width, height=height,
-                polygons=polygons)
+                polygons=polys)
+            count += 1
 
     def load_mask(self, image_id):
         """Generate instance masks for an image.
@@ -176,13 +202,13 @@ class GdxrayDataset(utils.Dataset):
 def train(model):
     """Train the model."""
     # Training dataset.
-    dataset_train = BalloonDataset()
-    dataset_train.load_balloon(args.dataset, "train")
+    dataset_train = GdxrayDataset()
+    dataset_train.load_gdxray(args.dataset, "train")
     dataset_train.prepare()
 
     # Validation dataset
-    dataset_val = BalloonDataset()
-    dataset_val.load_balloon(args.dataset, "val")
+    dataset_val = GdxrayDataset()
+    dataset_val.load_gdxray(args.dataset, "val")
     dataset_val.prepare()
 
     # *** This training schedule is an example. Update to your needs ***
@@ -279,13 +305,13 @@ if __name__ == '__main__':
 
     # Parse command line arguments
     parser = argparse.ArgumentParser(
-        description='Train Mask R-CNN to detect balloons.')
+        description='Train Mask R-CNN to detect defects.')
     parser.add_argument("command",
                         metavar="<command>",
                         help="'train' or 'splash'")
     parser.add_argument('--dataset', required=False,
-                        metavar="/path/to/balloon/dataset/",
-                        help='Directory of the Balloon dataset')
+                        metavar="/path/to/gdxray/dataset/",
+                        help='Directory of the gdxray dataset')
     parser.add_argument('--weights', required=True,
                         metavar="/path/to/weights.h5",
                         help="Path to weights .h5 file or 'coco'")
@@ -314,9 +340,9 @@ if __name__ == '__main__':
 
     # Configurations
     if args.command == "train":
-        config = BalloonConfig()
+        config = GdxrayConfig()
     else:
-        class InferenceConfig(BalloonConfig):
+        class InferenceConfig(GdxrayConfig):
             # Set batch size to 1 since we'll be running inference on
             # one image at a time. Batch size = GPU_COUNT * IMAGES_PER_GPU
             GPU_COUNT = 1
