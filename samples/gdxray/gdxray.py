@@ -34,9 +34,12 @@ from pudb import set_trace
 
 # Root directory of the project
 ROOT_DIR = os.path.abspath("../../")
+print('ROOT DIR', ROOT_DIR)
 
 # Import Mask RCNN
-sys.path.append(ROOT_DIR)  # To find local version of the library
+# sys.path.append(ROOT_DIR)  # To find local version of the library
+sys.path.insert(0, ROOT_DIR)
+print('SYS PATH', sys.path)
 from mrcnn.config import Config
 from mrcnn import model as modellib, utils
 
@@ -69,7 +72,8 @@ class GdxrayConfig(Config):
     NUM_CLASSES = 1 + 1  # Background + defect
 
     # Number of training steps per epoch
-    STEPS_PER_EPOCH = 100
+    # STEPS_PER_EPOCH = 100
+    STEPS_PER_EPOCH = 5
 
     # Skip detections with < 90% confidence
     DETECTION_MIN_CONFIDENCE = 0.9
@@ -105,14 +109,12 @@ class GdxrayDataset(utils.Dataset):
         subset: Subset to load: train or val
         """
         # Add classes. We have only one class to add.
-        self.add_class("gdxary", 1, "gdxray")
+        self.add_class("gdxray", 1, "gdxray")  # source, class_id, class_name
 
         # Train or validation dataset?
         assert subset in ["train", "val"]
         dataset_dir = os.path.join(dataset_dir, subset)
 
-        set_trace()
-        count = 0
         for json_name in glob.glob(args.dataset + '/*/*/*.json'):
             logging.info('\nJSON File name:{}'.format(json_name))
             image_name_list = glob.glob(os.path.dirname(json_name) + '/*.png')
@@ -128,7 +130,8 @@ class GdxrayDataset(utils.Dataset):
             file_list = list(gen_dict_extract('filename', regions))
             logging.info('File Names in JSON file:{}'.format(file_list))
             if len(file_list) > 1:
-                logging.error('File list greater that one')
+                logging.error(
+                    'File list greater that one...ignoring this JSON file')
                 print("JSON file name: {}".format(json_name))
                 print("File list greater that one: {}".format(file_list))
                 continue
@@ -139,20 +142,7 @@ class GdxrayDataset(utils.Dataset):
             logging.info('\nRegion list')
             logging.info(region_list)
 
-            logging.info('\nEnumerate shapes')
-            for shape_attrib in region_list[0]:
-                logging.info('all_points_x {}'.format(
-                    shape_attrib['shape_attributes']['all_points_x']))
-                logging.info('all_points_y {}'.format(
-                    shape_attrib['shape_attributes']['all_points_y']))
-                polys = [[x, y] for x, y in
-                         zip(shape_attrib['shape_attributes']['all_points_x'],
-                             shape_attrib['shape_attributes']['all_points_y'])]
-                polys = np.array(polys[0:-1])  # IS THIS NEEDED??
-
-            # load_mask() needs the image size to convert polygons to masks.
-            # Unfortunately, VIA doesn't include it in JSON, so we must read
-            # the image. This is only managable since the dataset is tiny.
+            polygons = [p['shape_attributes'] for p in region_list[0]]
             image = skimage.io.imread(image_path)
             height, width = image.shape[:2]
 
@@ -161,8 +151,7 @@ class GdxrayDataset(utils.Dataset):
                 image_id=image_path,  # ??use file name as a unique image id
                 path=image_path,
                 width=width, height=height,
-                polygons=polys)
-            count += 1
+                polygons=polygons)
 
     def load_mask(self, image_id):
         """Generate instance masks for an image.
@@ -171,9 +160,9 @@ class GdxrayDataset(utils.Dataset):
             one mask per instance.
         class_ids: a 1D array of class IDs of the instance masks.
         """
-        # If not a balloon dataset image, delegate to parent class.
+        # If not a gdxray dataset image, delegate to parent class.
         image_info = self.image_info[image_id]
-        if image_info["source"] != "balloon":
+        if image_info["source"] != "gdxray":
             return super(self.__class__, self).load_mask(image_id)
 
         # Convert polygons to a bitmap mask of shape
@@ -193,7 +182,7 @@ class GdxrayDataset(utils.Dataset):
     def image_reference(self, image_id):
         """Return the path of the image."""
         info = self.image_info[image_id]
-        if info["source"] == "balloon":
+        if info["source"] == "gdxray":
             return info["path"]
         else:
             super(self.__class__, self).image_reference(image_id)
@@ -207,6 +196,7 @@ def train(model):
     dataset_train.prepare()
 
     # Validation dataset
+    set_trace()
     dataset_val = GdxrayDataset()
     dataset_val.load_gdxray(args.dataset, "val")
     dataset_val.prepare()
