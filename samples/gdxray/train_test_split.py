@@ -5,6 +5,7 @@ import os
 from shutil import copyfile
 from pudb import set_trace
 import shutil
+import logging
 
 
 parser = argparse.ArgumentParser(
@@ -47,8 +48,20 @@ for source_path in train_list:
     os.makedirs(os.path.dirname(dest_path), exist_ok=True)
     copyfile(source_path, dest_path)
 
+    # Now copy the image
+    image_name_list = glob.glob(os.path.dirname(source_path) + '/*.png')
+    if len(image_name_list) != 1 and not os.path.isfile(image_name_list[0]):
+        logging.info('File {}, does not exist'.format(image_name_list))
+    else:
+        source_image_path = image_name_list[0]
+    dest_image_path = source_image_path.replace(
+        os.path.normpath(args.dataset), train_root_dir)
+    copyfile(source_image_path, dest_image_path)
+
 train_names_list = glob.glob(train_root_dir + '/*/*/*.json')
-print("Length of trainable JSON files: {}".format(len(train_names_list)))
+print("Total train JSON files: {}".format(len(train_names_list)))
+train_image_list = glob.glob(train_root_dir + '/*/*/*.png')
+print("Total train Image files: {}".format(len(train_image_list)))
 
 # Write out the val list files
 for source_path in val_list:
@@ -58,5 +71,17 @@ for source_path in val_list:
     os.makedirs(os.path.dirname(dest_path), exist_ok=True)
     copyfile(source_path, dest_path)
 
+    # Now copy the image
+    image_name_list = glob.glob(os.path.dirname(source_path) + '/*.png')
+    if len(image_name_list) != 1 and not os.path.isfile(image_name_list[0]):
+        logging.info('File {}, does not exist'.format(image_name_list))
+    else:
+        source_image_path = image_name_list[0]
+    dest_image_path = source_image_path.replace(
+        os.path.normpath(args.dataset), val_root_dir)
+    copyfile(source_image_path, dest_image_path)
+
 val_names_list = glob.glob(val_root_dir + '/*/*/*.json')
-print("Length of validation-able JSON files: {}".format(len(val_names_list)))
+print("Total validation JSON files: {}".format(len(val_names_list)))
+val_image_list = glob.glob(val_root_dir + '/*/*/*.png')
+print("Total validation Image files: {}".format(len(val_image_list)))
