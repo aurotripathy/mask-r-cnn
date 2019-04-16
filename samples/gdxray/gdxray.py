@@ -72,8 +72,7 @@ class GdxrayConfig(Config):
     NUM_CLASSES = 1 + 1  # Background + defect
 
     # Number of training steps per epoch
-    # STEPS_PER_EPOCH = 100
-    STEPS_PER_EPOCH = 5
+    STEPS_PER_EPOCH = 100
 
     # Skip detections with < 90% confidence
     DETECTION_MIN_CONFIDENCE = 0.9
@@ -113,9 +112,9 @@ class GdxrayDataset(utils.Dataset):
 
         # Train or validation dataset?
         assert subset in ["train", "val"]
-        dataset_dir = os.path.join(dataset_dir, subset)
+        dataset_dir_subset = os.path.join(dataset_dir, subset)
 
-        for json_name in glob.glob(args.dataset + '/*/*/*.json'):
+        for json_name in glob.glob(dataset_dir_subset + '/*/*/*.json'):
             logging.info('\nJSON File name:{}'.format(json_name))
             image_name_list = glob.glob(os.path.dirname(json_name) + '/*.png')
             if len(image_name_list) != 1 and not os.path.isfile(image_name_list[0]):
@@ -191,12 +190,12 @@ class GdxrayDataset(utils.Dataset):
 def train(model):
     """Train the model."""
     # Training dataset.
+    set_trace()
     dataset_train = GdxrayDataset()
     dataset_train.load_gdxray(args.dataset, "train")
     dataset_train.prepare()
 
     # Validation dataset
-    set_trace()
     dataset_val = GdxrayDataset()
     dataset_val.load_gdxray(args.dataset, "val")
     dataset_val.prepare()
