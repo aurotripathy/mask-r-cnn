@@ -6,7 +6,7 @@ It resues all of the code available [here](https://github.com/matterport/Mask_RC
 Sample results are shown below. 
 
 ![mark-r-cnn](samples/gdxray/results/val/C0001/C001.01/C001.png)
-![mark-r-cnn](samples/gdxray/results/val/C0021/C0021_0024/C0021_0024_BB.png)
+![mark-r-cnn](samples/gdxray/results/val/C0021/C0021_0025/C0021_0025_BB.png)
 
 
 
