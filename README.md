@@ -5,9 +5,10 @@ This project trains a Mask R-CNN model written in Keras/TensorFlow to find defec
 It resues all of the code available [here](https://github.com/matterport/Mask_RCNN).
 Sample results are shown below. 
 
-![mark-r-cnn](samples/gdxray/results/val/C0001/C001.01/C001.png | width=300)
+![mark-r-cnn](samples/gdxray/results/val/C0001/C001.01/C001.png)
+![mark-r-cnn](samples/gdxray/results/val/C0021/C0021_0024/C0021_0024_BB.png)
 
-<img align="left" width="100" src="./samples/gdxray/results/val/C0001/C001.01/C001.png"/>
+
 
 # Mask R-CNN for Object Detection and Segmentation
 
