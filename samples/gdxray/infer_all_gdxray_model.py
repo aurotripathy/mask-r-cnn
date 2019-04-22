@@ -1,10 +1,8 @@
 import os
 import sys
 import tensorflow as tf
-# import matplotlib
-import matplotlib.pyplot as plt
-# import matplotlib.patches as patches
-
+from pudb import set_trace
+from shutil import rmtree
 # Root directory of the project
 ROOT_DIR = os.path.abspath("../../")
 print('ROOT DIR', ROOT_DIR)
@@ -30,10 +28,13 @@ MODEL_DIR = os.path.join(ROOT_DIR, "logs")
 
 config = gdxray.GdxrayConfig()
 GDXRAY_DIR = "/home/auro/via/n-test/"
+RESULTS_DIR = "results"
+if os.path.isdir(RESULTS_DIR):
+    rmtree(RESULTS_DIR)  # start afresh
 
 
 class InferenceConfig(config.__class__):
-    """ Override the training configurations with a few changes 
+    """ Override the training configurations with a few changes
     for inferencing.
     """
     # Run detection on one image at a time
@@ -82,6 +83,7 @@ model.load_weights(weights_path, by_name=True)
 
 # Run Detection on all images
 for image_id in dataset.image_ids:
+    set_trace()
     image, image_meta, gt_class_id, gt_bbox, gt_mask =\
         data_generator_lib.load_image_gt(
             dataset, config, image_id, use_mini_mask=False)
@@ -89,6 +91,11 @@ for image_id in dataset.image_ids:
     print("image ID: {}.{} ({}) {}".format(info["source"], info["id"],
                                            image_id,
                                            dataset.image_reference(image_id)))
+
+    # Get a dir ready to write the results in
+    rel_path = os.path.relpath(dataset.image_reference(image_id), GDXRAY_DIR)
+    file_path = os.path.join(RESULTS_DIR, rel_path)
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
     # Run object detection
     results = model.detect([image], verbose=1)
@@ -101,9 +108,12 @@ for image_id in dataset.image_ids:
     #                               r['scores'], r['masks'],
     #                               dataset.class_names, ax=None,
     #                               title=None)
-    visualize.display_instances(image, r['rois'], r['masks'], r['class_ids'],
-                                dataset.class_names, ax=None, show_bbox=False,
-                                title="Predictions", captions=[""] * 20)
+    visualize.save_instances_in_dir(image, r['rois'], r['masks'],
+                                    r['class_ids'],
+                                    dataset.class_names,
+                                    file_path,
+                                    ax=None, show_bbox=False,
+                                    title="Predictions", captions=[""] * 20)
 
     log("gt_class_id", gt_class_id)
     log("gt_bbox", gt_bbox)
