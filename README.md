@@ -2,7 +2,7 @@
 
 This project trains a Mask R-CNN model written in Keras/TensorFlow to find defects in Xray Images. 
 
-It reuses all of the code available [here](https://github.com/matterport/Mask_RCNN) (refactored into modules).
+It reuses all of the code available [here](https://github.com/matterport/Mask_RCNN) (additionally, refactoring them into modules).
 
 Sample results are shown below. 
 
