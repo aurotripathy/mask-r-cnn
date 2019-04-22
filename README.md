@@ -7,7 +7,7 @@ Sample results are shown below.
 
 ![mark-r-cnn](samples/gdxray/results/val/C0001/C001.01/C001.png)
 ![mark-r-cnn](samples/gdxray/results/val/C0021/C0021_0025/C0021_0025_BB.png)
-![mark-r-cnn](samples/gdxray/results/val/C0021/C0021_0026/C0026_0010_BB.png)
+![mark-r-cnn](samples/gdxray/results/val/C0026/C0026_0010/C0026_0010_BB.png)
 
 
 
