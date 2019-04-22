@@ -5,7 +5,7 @@ Sample results are shown below.
 
 ![mark-r-cnn](samples/gdxray/results/val/C0001/C001.01/C001.png | width=300)
 
-<img align="left" width="100" src="samples/gdxray/results/val/C0001/C001.01/C001.png"/>
+<img align="left" width="100" src="./samples/gdxray/results/val/C0001/C001.01/C001.png"/>
 
 # Mask R-CNN for Object Detection and Segmentation
 
