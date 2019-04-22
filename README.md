@@ -1,10 +1,12 @@
 This project use Mask R-CNN/Keras/TensorFlow to find defect in XRAY Images. 
 
 It resues all of the code available [here](https://github.com/matterport/Mask_RCNN).
-
 Sample results are shown below. 
 
 ![mark-r-cnn](samples/gdxray/results/val/C0001/C001.01/C001.png)
+
+<img align="left" width="100" height="100" src="samples/gdxray/results/val/C0001/C001.01/C001.png">
+
 # Mask R-CNN for Object Detection and Segmentation
 
 This is an implementation of [Mask R-CNN](https://arxiv.org/abs/1703.06870) on Python 3, Keras, and TensorFlow. The model generates bounding boxes and segmentation masks for each instance of an object in the image. It's based on Feature Pyramid Network (FPN) and a ResNet101 backbone.
