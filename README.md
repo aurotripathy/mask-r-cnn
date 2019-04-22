@@ -3,7 +3,7 @@ This project use Mask R-CNN/Keras/TensorFlow to find defect in XRAY Images.
 It resues all of the code available [here](https://github.com/matterport/Mask_RCNN).
 Sample results are shown below. 
 
-![mark-r-cnn](samples/gdxray/results/val/C0001/C001.01/C001.png)
+![mark-r-cnn](samples/gdxray/results/val/C0001/C001.01/C001.png | width=300)
 
 <img align="left" width="100" height="100" src="samples/gdxray/results/val/C0001/C001.01/C001.png">
 
