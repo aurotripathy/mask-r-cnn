@@ -4,7 +4,7 @@ This project trains a Mask R-CNN model written in Keras/TensorFlow to find defec
 
 It reuses all of the code available [here](https://github.com/matterport/Mask_RCNN) (additionally, refactoring them into modules).
 
-Sample results are shown below. Each instance of a predicted mask is color-coded. THe dashed bounding-box (in greeen) is the ground-truth. 
+Sample results are shown below. Each instance of a predicted mask is color-coded. The dashed bounding-box (in greeen) is the ground-truth. 
 
 ![mark-r-cnn](samples/gdxray/results/val/C0001/C001.01/C001.png)
 ![mark-r-cnn](samples/gdxray/results/val/C0021/C0021_0025/C0021_0025_BB.png)
