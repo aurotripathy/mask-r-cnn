@@ -14,10 +14,12 @@ Sample results are shown below. Each instance of a predicted mask is color-coded
   <img src="samples/gdxray/results/val/C0026/C0026_0010_BB/C0026_0010_BB.png" width="400" />
   <img src="samples/gdxray/results/val/C0030/C0030_0009/C0030_0009_BB.png" width="400" /> 
 </p>
+<!--
 ![mark-r-cnn](samples/gdxray/results/val/C0001/C001.01/C001.png) 
 ![mark-r-cnn](samples/gdxray/results/val/C0021/C0021_0025/C0021_0025_BB.png)
 ![mark-r-cnn](samples/gdxray/results/val/C0026/C0026_0010_BB/C0026_0010_BB.png)
 ![mark-r-cnn](samples/gdxray/results/val/C0030/C0030_0009/C0030_0009_BB.png)
+-->
 
 
 
