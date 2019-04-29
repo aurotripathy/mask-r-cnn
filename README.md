@@ -6,7 +6,14 @@ It reuses all of the code available [here](https://github.com/matterport/Mask_RC
 
 Sample results are shown below. Each instance of a predicted mask is color-coded. The dashed bounding-box (in green) is the ground-truth. 
 
-![mark-r-cnn](samples/gdxray/results/val/C0001/C001.01/C001.png) ![mark-r-cnn](samples/gdxray/results/val/C0021/C0021_0025/C0021_0025_BB.png)
+<p float="left">
+  <img src="samples/gdxray/results/val/C0001/C001.01/C001.png" width="100" />
+  <img src="samples/gdxray/results/val/C0001/C001.01/C001.png" width="100" /> 
+  <img src="/img3.png" width="100" />
+</p>
+
+![mark-r-cnn](samples/gdxray/results/val/C0001/C001.01/C001.png) 
+![mark-r-cnn](samples/gdxray/results/val/C0021/C0021_0025/C0021_0025_BB.png)
 ![mark-r-cnn](samples/gdxray/results/val/C0026/C0026_0010_BB/C0026_0010_BB.png)
 ![mark-r-cnn](samples/gdxray/results/val/C0030/C0030_0009/C0030_0009_BB.png)
 
