@@ -23,7 +23,9 @@ Sample results are shown below. Each instance of a predicted mask is color-coded
 ![mark-r-cnn](samples/gdxray/results/val/C0030/C0030_0009/C0030_0009_BB.png)
 -->
 
+All the of customization needed to train and evaluate is in the folder `mask-r-cnn/samples/gdxray/`
 
+##Original project
 
 # Mask R-CNN for Object Detection and Segmentation
 
